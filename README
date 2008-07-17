@@ -1,0 +1,44 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2302
+
+This plugin provides commands that fold away lines that don't match a specific search pattern.  This pattern can be the word under the cursor, the last search pattern, a regular expression or spelling errors. There are also commands to change the context of the shown lines.
+
+Commands:
+
+:Fw [context*]
+  show lines which contain the word under the cursor. Default [context] is 0.
+ 
+:Fs [context*]
+  show lines which contain previous search pattern. Default [context] is 0.
+ 
+:Fp pattern
+  show the lines that contain the regular expression. Context is 0.
+
+:FS
+  show the lines that contain spelling errors.
+ 
+:Fl
+  fold again with the last used pattern
+
+:Fc [context*]
+  show context lines.
+ 
+:Fi
+  increment context by one line.
+ 
+:Fd
+  decrement context by one line.
+ 
+:Fe
+  set modified fold options to their previous value
+
+* context can consist of one or two numbers. A 'unsigned' number defines the context before and after the pattern. If a number has a '-' prefix, it defines only the context before the pattern. If it has a '+' prefix, it defines only the context after a pattern.
+
+Mappings:
+
+<Leader>fs     FoldSearch()
+<Leader>fw     FoldCword()
+<Leader>fl     FoldLast()
+<Leader>fS     FoldSpell()
+<Leader>fi     FoldContextAdd(+1)
+<Leader>fd     FoldContextAdd(-1)
+<Leader>fe     FoldSearchEnd()
