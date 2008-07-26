@@ -1,5 +1,5 @@
 " Name: foldsearch.vim
-" Version: $Id: foldsearch.vim 2209 2008-07-18 05:53:15Z mbr $
+" Version: $Id: foldsearch.vim 2213 2008-07-20 10:39:03Z mbr $
 " Author: Markus Braun
 " Summary: Vim plugin to fold away lines that don't match a search pattern
 " Licence: This program is free software; you can redistribute it and/or
@@ -52,8 +52,8 @@
 "
 "   <Leader>fs     FoldSearch()
 "   <Leader>fw     FoldCword()
-"   <Leader>fl     FoldLast()
 "   <Leader>fS     FoldSpell()
+"   <Leader>fl     FoldLast()
 "   <Leader>fi     FoldContextAdd(+1)
 "   <Leader>fd     FoldContextAdd(-1)
 "   <Leader>fe     FoldSearchEnd()
@@ -63,7 +63,7 @@
 if (exists("g:loaded_foldsearch") || &cp)
   finish
 endi
-let g:loaded_foldsearch = "$Revision: 2209 $"
+let g:loaded_foldsearch = "$Revision: 2213 $"
 
 " Section: Functions {{{1
 
@@ -117,11 +117,11 @@ function! s:FoldPattern(pattern)
   call s:FoldSearchDo()
 endfunction
 
-" Function: s:FoldSpell()  {{{2
+" Function: s:FoldSpell(...)  {{{2
 "
 " do the search and folding based on spellchecker
 "
-function! s:FoldSpell()
+function! s:FoldSpell(...)
   " if foldsearch_pattern is not defined, then exit
   if (!&spell)
     echo "Spell checking not enabled, ending Foldsearch"
@@ -148,7 +148,14 @@ function! s:FoldSpell()
   if (empty(b:foldsearch_pattern))
     echo "No spelling errors found!"
   else
-    call s:FoldSearchDo()
+    " determine the number of context lines
+    if (a:0 == 0)
+      call s:FoldSearchDo()
+    elseif (a:0 == 1)
+      call s:FoldSearchContext(a:1)
+    elseif (a:0 == 2)
+      call s:FoldSearchContext(a:1, a:2)
+    endif
   endif
 
 endfunction
@@ -185,6 +192,8 @@ function! s:FoldSearchContext(...)
     return
   else
     let number=1
+    let b:foldsearch_context_pre = 0
+    let b:foldsearch_context_post = 0
     while number <= a:0
       execute "let argument = a:" . number . ""
       if (strpart(argument, 0, 1) == "-")
@@ -369,19 +378,19 @@ function! s:FoldSearchEnd()
 
 endfunction
 " Section: Commands {{{1
-command! -nargs=? -complete=command Fs call s:FoldSearch(<f-args>)
-command! -nargs=? -complete=command Fw call s:FoldCword(<f-args>)
+command! -nargs=* -complete=command Fs call s:FoldSearch(<f-args>)
+command! -nargs=* -complete=command Fw call s:FoldCword(<f-args>)
 command! -nargs=1 Fp call s:FoldPattern(<q-args>)
+command! -nargs=* -complete=command FS call s:FoldSpell(<f-args>)
 command! -nargs=0 Fl call s:FoldLast()
-command! -nargs=0 FS call s:FoldSpell()
 command! -nargs=* Fc call s:FoldSearchContext(<f-args>)
 command! -nargs=0 Fi call s:FoldContextAdd(+1)
 command! -nargs=0 Fd call s:FoldContextAdd(-1)
 command! -nargs=0 Fe call s:FoldSearchEnd()
 " Section: Mappings {{{1
 map <Leader>fs :call <SID>FoldSearch()<CR>
-map <Leader>fS :call <SID>FoldSpell()<CR>
 map <Leader>fw :call <SID>FoldCword()<CR>
+map <Leader>fS :call <SID>FoldSpell()<CR>
 map <Leader>fl :call <SID>FoldLast()<CR>
 map <Leader>fi :call <SID>FoldContextAdd(+1)<CR>
 map <Leader>fd :call <SID>FoldContextAdd(-1)<CR>
